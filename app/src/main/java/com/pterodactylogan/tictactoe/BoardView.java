@@ -84,10 +84,13 @@ public class BoardView extends View {
                 cell = b.eval(r, c);
 
                 if (cell == BoardStructure.value.X) {
-                    canvas.drawCircle(c*cellSize + cellSize/2, r*cellSize+cellSize/2, .35f*cellSize, mXPaint);
+                    mXPaint.setStrokeWidth(cellSize/8.0f);
+                    canvas.drawLine(c*cellSize+cellSize/8, r*cellSize+cellSize/8, c*cellSize+7*cellSize/8, r*cellSize+7*cellSize/8, mXPaint);
+                    canvas.drawLine(c*cellSize+7*cellSize/8, r*cellSize+cellSize/8, c*cellSize+cellSize/8, r*cellSize+7*cellSize/8, mXPaint);
                 } else if (cell == BoardStructure.value.O) {
-
-                    canvas.drawCircle(c*cellSize + cellSize/2, r*cellSize+cellSize/2, 0.35f*cellSize, mOPaint);
+                    mOPaint.setStyle(Paint.Style.STROKE);
+                    mOPaint.setStrokeWidth(cellSize/8.0f);
+                    canvas.drawCircle(c*cellSize + cellSize/2, r*cellSize+cellSize/2, 0.30f*cellSize, mOPaint);
                 }
             }
         }

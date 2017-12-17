@@ -11,6 +11,7 @@ public class BoardStructure {
 
     value[][] board = new value[BoardSize][BoardSize];
 
+    //initialize board to be empty
     public BoardStructure(int size){
         for (int r = 0 ; r < size ; r++){
             for (int c = 0; c < size ; c++){
@@ -18,6 +19,7 @@ public class BoardStructure {
             }
         }
         board[1][1]=value.X;
+        board[0][0]=value.O;
     }
 
     /**
