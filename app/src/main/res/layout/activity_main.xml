@@ -22,15 +22,44 @@
         android:id="@+id/board"
         android:layout_below="@id/textView"
         android:layout_marginTop="20dp"/>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/board"
+        android:id="@+id/orientation"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp">
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Front"
+            android:id="@+id/front"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Side"
+            android:id="@+id/side"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Top"
+            android:id="@+id/top"/>
+    </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/board"
+        android:layout_below="@id/orientation"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="40dp"
         android:text="New Game"
         android:id="@+id/NewGame"/>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/NewGame"
+        android:layout_marginTop="30dp"/>
 
 
 </RelativeLayout>

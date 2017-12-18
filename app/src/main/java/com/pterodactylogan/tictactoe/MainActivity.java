@@ -22,9 +22,35 @@ public class MainActivity extends AppCompatActivity {
                 reset(game);
             }
         });
+
+        final Button front = (Button) findViewById(R.id.front);
+        Button side = (Button) findViewById(R.id.side);
+        Button top = (Button) findViewById(R.id.top);
+        front.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                orient(game, BoardView.ot.FRONT);
+            }
+        });
+        side.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                orient(game, BoardView.ot.SIDE);
+            }
+        });
+        top.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                orient(game, BoardView.ot.TOP);
+            }
+        });
     }
 
     public void reset(BoardView v){
         v.reset();
+    }
+
+    public void orient(BoardView v, BoardView.ot orientation){
+        v.orient(orientation);
     }
 }

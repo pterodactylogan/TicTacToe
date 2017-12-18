@@ -23,10 +23,19 @@ import android.view.WindowManager;
 
 public class BoardView extends View {
 
-    private boolean comp=false;
-    BoardStructure b = new BoardStructure(3);
-    BoardStructure.value player = BoardStructure.value.X;
+    private boolean comp=false; //prevents player from doing anything when computer is going
+    BoardStructure b = new BoardStructure(3); //the gameboard
+    BoardStructure.value player = BoardStructure.value.X; //user's symbol
     BoardStructure.value computer = BoardStructure.value.O;
+
+    //orientation of board
+    public enum ot {TOP, FRONT, SIDE}
+    public ot orientation=ot.TOP;
+    public void orient(ot newOrientation){
+        orientation=newOrientation;
+        postInvalidate();
+        System.out.println(orientation);
+    }
 
     //constructors
     public BoardView(Context context) {
@@ -64,6 +73,7 @@ public class BoardView extends View {
 
     //custom constructor helper
     private void init(){
+        orientation=ot.TOP;
         mLinePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         mLinePaint.setColor(Color.parseColor("#161616"));
         mLinePaint.setStrokeWidth(4);
@@ -135,7 +145,9 @@ public class BoardView extends View {
             int inc=boardSize*l;
             for (int r = 0; r < b.BoardSize; r++) {
                 for (int c = 0; c < b.BoardSize; c++) {
-                    cell = b.eval(l, c, r);
+                    if(orientation==ot.TOP) cell = b.eval(l, c, r);
+                    else if(orientation==ot.SIDE) cell=b.eval(r,2-l,2-c);
+                    else cell=b.eval(r,c,2-l);
 
                     if (cell == BoardStructure.value.X) {
                         mXPaint.setStrokeWidth(cellSize/8.0f);
