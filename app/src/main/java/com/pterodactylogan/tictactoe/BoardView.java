@@ -3,6 +3,7 @@ package com.pterodactylogan.tictactoe;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -47,7 +48,7 @@ public class BoardView extends View {
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec,heightMeasureSpec);
         int width = getMeasuredWidth();
-        setMeasuredDimension(width, width);
+        setMeasuredDimension(width, width/3);
     }
 
     private Paint mLinePaint;
@@ -70,27 +71,38 @@ public class BoardView extends View {
     }
 
     public void onDraw(Canvas canvas){
-        int cellSize = getWidth() / 3;
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        float ratio = metrics.densityDpi/160f;
+        float pad = 2*ratio; //change distance between boards
+
+        int boardSize = getWidth()/3;
+        int cellSize = boardSize / 3;
         mLinePaint.setStrokeWidth(cellSize/15.0f);
-        for (int i = 1; i < 3; i++) {
-            canvas.drawLine(cellSize * i, 0, cellSize * i, getHeight(), mLinePaint);
-            canvas.drawLine(0, cellSize * i, getWidth(), cellSize * i, mLinePaint);
+        for(int layer=0; layer<3; layer++){
+            int inc=boardSize*layer;
+            for (int i = 1; i < 3; i++) {
+                canvas.drawLine(cellSize * i+inc, 0, cellSize * i+inc, getHeight(), mLinePaint);
+                canvas.drawLine(0+inc+pad, cellSize * i, boardSize+inc-pad, cellSize * i, mLinePaint);
+            }
         }
 
         BoardStructure.value cell;
-        //Log.d("on Draw:", b.nicerToString());
-        for (int r = 0; r < b.BoardSize; r++) {
-            for (int c = 0; c < b.BoardSize; c++) {
-                cell = b.eval(r, c);
 
-                if (cell == BoardStructure.value.X) {
-                    mXPaint.setStrokeWidth(cellSize/8.0f);
-                    canvas.drawLine(c*cellSize+cellSize/8, r*cellSize+cellSize/8, c*cellSize+7*cellSize/8, r*cellSize+7*cellSize/8, mXPaint);
-                    canvas.drawLine(c*cellSize+7*cellSize/8, r*cellSize+cellSize/8, c*cellSize+cellSize/8, r*cellSize+7*cellSize/8, mXPaint);
-                } else if (cell == BoardStructure.value.O) {
-                    mOPaint.setStyle(Paint.Style.STROKE);
-                    mOPaint.setStrokeWidth(cellSize/8.0f);
-                    canvas.drawCircle(c*cellSize + cellSize/2, r*cellSize+cellSize/2, 0.30f*cellSize, mOPaint);
+        for(int l=0; l<b.BoardSize; l++){
+            int inc=boardSize*l;
+            for (int r = 0; r < b.BoardSize; r++) {
+                for (int c = 0; c < b.BoardSize; c++) {
+                    cell = b.eval(l, r, c);
+
+                    if (cell == BoardStructure.value.X) {
+                        mXPaint.setStrokeWidth(cellSize/8.0f);
+                        canvas.drawLine(c*cellSize+cellSize/8+inc, r*cellSize+cellSize/8, c*cellSize+7*cellSize/8+inc, r*cellSize+7*cellSize/8, mXPaint);
+                        canvas.drawLine(c*cellSize+7*cellSize/8+inc, r*cellSize+cellSize/8, c*cellSize+cellSize/8+inc, r*cellSize+7*cellSize/8, mXPaint);
+                    } else if (cell == BoardStructure.value.O) {
+                        mOPaint.setStyle(Paint.Style.STROKE);
+                        mOPaint.setStrokeWidth(cellSize/8.0f);
+                        canvas.drawCircle(c*cellSize + cellSize/2+inc, r*cellSize+cellSize/2, 0.30f*cellSize, mOPaint);
+                    }
                 }
             }
         }

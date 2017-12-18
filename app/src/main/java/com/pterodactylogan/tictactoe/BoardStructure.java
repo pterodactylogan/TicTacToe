@@ -9,26 +9,31 @@ public class BoardStructure {
 
     public enum value {X, O, EMPTY}
 
-    value[][] board = new value[BoardSize][BoardSize];
+    value [][][] board = new value[3][BoardSize][BoardSize];
 
     //initialize board to be empty
     public BoardStructure(int size){
-        for (int r = 0 ; r < size ; r++){
-            for (int c = 0; c < size ; c++){
-                board[r][c] = value.EMPTY;
+        for(int z=0; z<3; z++){
+            for (int x = 0 ; x < size ; x++){
+                for (int y = 0; y < size ; y++){
+                    board[z][x][y]=value.EMPTY;
+                }
             }
         }
-        board[1][1]=value.X;
-        board[0][0]=value.O;
+        board[0][0][0]=value.O;
+        board[1][1][0]=value.X;
+        board[2][0][0]=value.O;
+        board[2][1][0]=value.X;
     }
 
     /**
      * Evaluates the value of a cell.
-     * @param r
-     * @param c
+     * @param z
+     * @param x
+     * @param y
      * @return
      */
-    public value eval(int r, int c){
-        return board[r][c];
+    public value eval(int z, int x, int y){
+        return board[z][x][y];
     }
 }
