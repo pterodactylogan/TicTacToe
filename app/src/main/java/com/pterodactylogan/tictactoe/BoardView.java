@@ -68,6 +68,9 @@ public class BoardView extends View {
         mOPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
         mOPaint.setColor(Color.parseColor("#0000ff"));
         mOPaint.setStrokeWidth(4);
+
+        //b.setCell(0,0,0, BoardStructure.value.X);
+        b.winner(0,0,0);
     }
 
     public void onDraw(Canvas canvas){
