@@ -11,6 +11,8 @@ import android.os.Build;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 
@@ -21,6 +23,7 @@ import android.view.WindowManager;
 public class BoardView extends View {
 
     BoardStructure b = new BoardStructure(3);
+    BoardStructure.value player = BoardStructure.value.X;
 
     //constructors
     public BoardView(Context context) {
@@ -69,8 +72,31 @@ public class BoardView extends View {
         mOPaint.setColor(Color.parseColor("#0000ff"));
         mOPaint.setStrokeWidth(4);
 
-        //b.setCell(0,0,0, BoardStructure.value.X);
-        b.winner(0,0,0);
+        setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                //Log.d("wow", "touch event!");
+                if (motionEvent.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                    //Log.d("event", "down");
+                    return true;
+                } else if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
+                    int boardSize = getWidth() / 3;
+                    int cellSize = boardSize/3;
+                    int l = (int) (motionEvent.getX()/boardSize);
+                    int c = (int)((motionEvent.getX()%boardSize)/cellSize);
+                    int r = (int) (motionEvent.getY()/cellSize);
+                    Log.d("coords", l +", "+c+", "+r);
+                    playerTurn(l,c,r);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    private void playerTurn(int l,int c,int r){
+        b.setCell(l,c,r, player);
+        postInvalidate();
     }
 
     public void onDraw(Canvas canvas){
@@ -95,7 +121,7 @@ public class BoardView extends View {
             int inc=boardSize*l;
             for (int r = 0; r < b.BoardSize; r++) {
                 for (int c = 0; c < b.BoardSize; c++) {
-                    cell = b.eval(l, r, c);
+                    cell = b.eval(l, c, r);
 
                     if (cell == BoardStructure.value.X) {
                         mXPaint.setStrokeWidth(cellSize/8.0f);
