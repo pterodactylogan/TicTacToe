@@ -16,19 +16,21 @@
         android:textColor="#000000"
         android:textSize="30sp" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <com.pterodactylogan.tictactoe.BoardView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:id="@+id/board"
         android:layout_below="@id/textView"
-        android:layout_marginTop="40dp">
+        android:layout_marginTop="20dp"/>
 
-        <com.pterodactylogan.tictactoe.BoardView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/board"/>
-
-    </LinearLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/board"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:text="New Game"
+        android:id="@+id/NewGame"/>
 
 
 </RelativeLayout>

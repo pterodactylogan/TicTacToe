@@ -10,10 +10,9 @@ import java.io.Console;
  */
 
 public class BoardStructure {
+
     public int BoardSize=3;
-
     public enum value {X, O, EMPTY}
-
     private value [][][] board = new value[3][BoardSize][BoardSize];
 
     //initialize board to be empty
@@ -108,5 +107,34 @@ public class BoardStructure {
             return center;
         }
         return value.EMPTY;
+    }
+
+    //get a move for the specified player (ie Xs or Os)
+    //finds first available move atm
+    public int[] getMove(value player){
+        int[] result= new int[3];
+        for(int z=0; z<3;z++){
+            for(int x=0; x<3; x++){
+                for(int y=0; y<3; y++){
+                    if(isLegal(z,x,y)){
+                        result[0]=z;
+                        result[1]=x;
+                        result[2]=y;
+                        return result;
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    public void reset(){
+        for(int z=0; z<3; z++){
+            for (int x = 0 ; x < BoardSize ; x++){
+                for (int y = 0; y < BoardSize ; y++){
+                    board[z][x][y]=value.EMPTY;
+                }
+            }
+        }
     }
 }

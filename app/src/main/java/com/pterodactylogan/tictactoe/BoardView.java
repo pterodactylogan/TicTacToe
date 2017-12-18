@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Build;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -22,8 +23,10 @@ import android.view.WindowManager;
 
 public class BoardView extends View {
 
+    private boolean comp=false;
     BoardStructure b = new BoardStructure(3);
     BoardStructure.value player = BoardStructure.value.X;
+    BoardStructure.value computer = BoardStructure.value.O;
 
     //constructors
     public BoardView(Context context) {
@@ -47,6 +50,7 @@ public class BoardView extends View {
         init();
     }
 
+    //set view dimensions
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec,heightMeasureSpec);
@@ -82,11 +86,11 @@ public class BoardView extends View {
                 } else if (motionEvent.getActionMasked() == MotionEvent.ACTION_UP) {
                     int boardSize = getWidth() / 3;
                     int cellSize = boardSize/3;
-                    int l = (int) (motionEvent.getX()/boardSize);
-                    int c = (int)((motionEvent.getX()%boardSize)/cellSize);
-                    int r = (int) (motionEvent.getY()/cellSize);
+                    int l = (int) (motionEvent.getX()/boardSize); //layer
+                    int c = (int)((motionEvent.getX()%boardSize)/cellSize); //row
+                    int r = (int) (motionEvent.getY()/cellSize); //column
                     Log.d("coords", l +", "+c+", "+r);
-                    playerTurn(l,c,r);
+                    if(!comp) playerTurn(l,c,r);
                     return true;
                 }
                 return false;
@@ -96,7 +100,17 @@ public class BoardView extends View {
 
     private void playerTurn(int l,int c,int r){
         b.setCell(l,c,r, player);
+        BoardStructure.value win = b.winner(l,c,r);
+        if(win!=BoardStructure.value.EMPTY){
+            //game over
+            postInvalidate();
+            comp=true;
+            return;
+        }
         postInvalidate();
+        comp=true;
+        computerTurn();
+        return;
     }
 
     public void onDraw(Canvas canvas){
@@ -137,5 +151,37 @@ public class BoardView extends View {
         }
     }
 
+    private final Handler handler = new Handler();
 
+    final Runnable compTurn = new Runnable() {
+        @Override
+        public void run() {
+            comp=true;
+            //Log.d("comp turn","...");
+            int[] move = b.getMove(computer);
+            if(move==null){
+                //game over
+                return;
+            }
+            b.setCell(move[0],move[1],move[2],computer);
+            BoardStructure.value win = b.winner(move[0],move[1],move[2]);
+            if(win!= BoardStructure.value.EMPTY){
+                //game over
+                postInvalidate();
+                return;
+            }
+            postInvalidate();
+            comp=false;
+        }
+    };
+
+    private void computerTurn(){
+        handler.postDelayed(compTurn,1000);
+    }
+
+    public void reset(){
+        b.reset();
+        postInvalidate();
+        comp=false;
+    }
 }
