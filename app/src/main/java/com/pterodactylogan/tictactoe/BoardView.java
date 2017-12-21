@@ -19,6 +19,12 @@ import android.view.WindowManager;
 
 /**
  * Created by Logan on 12/17/17.
+ * TODO:
+ * -change orientation butons to indicate current orientation
+ * -highlight winning cells
+ * -improve computer playing algoritm
+ * -create settings screen
+ * -fix sizing to work with many devices
  */
 
 public class BoardView extends View {
@@ -27,6 +33,19 @@ public class BoardView extends View {
     BoardStructure b = new BoardStructure(3); //the gameboard
     BoardStructure.value player = BoardStructure.value.X; //user's symbol
     BoardStructure.value computer = BoardStructure.value.O;
+
+    private Paint mLinePaint; //paint objects to draw board
+    private Paint mXPaint;
+    private Paint mOPaint;
+
+    //setup status listener to update text
+    public interface GameStatusListener {
+        void updateText(String text);
+    }
+    private GameStatusListener mStatus;
+    public void setStatusListener(GameStatusListener listener){
+        mStatus= listener;
+    }
 
     //orientation of board
     public enum ot {TOP, FRONT, SIDE}
@@ -42,17 +61,14 @@ public class BoardView extends View {
         super(context);
         init();
     }
-
     public BoardView(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init();
     }
-
     public BoardView(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
-
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public BoardView(Context context, @Nullable AttributeSet attrs, int defStyleAttr, int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
@@ -66,10 +82,6 @@ public class BoardView extends View {
         int width = getMeasuredWidth();
         setMeasuredDimension(width, width/3);
     }
-
-    private Paint mLinePaint;
-    private Paint mXPaint;
-    private Paint mOPaint;
 
     //custom constructor helper
     private void init(){
@@ -112,7 +124,11 @@ public class BoardView extends View {
         b.setCell(l,c,r, player);
         BoardStructure.value win = b.winner(l,c,r);
         if(win!=BoardStructure.value.EMPTY){
-            //game over
+            if(win==player){
+                mStatus.updateText("You Win!");
+            }else{
+                mStatus.updateText("You Lose :(");
+            }
             postInvalidate();
             comp=true;
             return;
@@ -145,10 +161,12 @@ public class BoardView extends View {
             int inc=boardSize*l;
             for (int r = 0; r < b.BoardSize; r++) {
                 for (int c = 0; c < b.BoardSize; c++) {
+                    //pick which values to draw where according to orientation of board
                     if(orientation==ot.TOP) cell = b.eval(l, c, r);
                     else if(orientation==ot.SIDE) cell=b.eval(r,2-l,2-c);
                     else cell=b.eval(r,c,2-l);
 
+                    //paint cell values
                     if (cell == BoardStructure.value.X) {
                         mXPaint.setStrokeWidth(cellSize/8.0f);
                         canvas.drawLine(c*cellSize+cellSize/8+inc, r*cellSize+cellSize/8, c*cellSize+7*cellSize/8+inc, r*cellSize+7*cellSize/8, mXPaint);
@@ -178,7 +196,11 @@ public class BoardView extends View {
             b.setCell(move[0],move[1],move[2],computer);
             BoardStructure.value win = b.winner(move[0],move[1],move[2]);
             if(win!= BoardStructure.value.EMPTY){
-                //game over
+                if(win==player){
+                    mStatus.updateText("You Win!");
+                }else{
+                    mStatus.updateText("You Lose :(");
+                }
                 postInvalidate();
                 return;
             }

@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffff99"
-    android:paddingTop="40dp">
+    android:paddingTop="40dp"
+    android:id="@+id/layout">
 
     <TextView
         android:id="@+id/textView"
@@ -29,37 +30,43 @@
         android:id="@+id/orientation"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp">
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Front"
-            android:id="@+id/front"/>
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Side"
-            android:id="@+id/side"/>
+
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Top"
-            android:id="@+id/top"/>
+            android:id="@+id/top"
+            android:background="@color/colorPrimary"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Front"
+            android:id="@+id/front"
+            android:background="@color/buttonColor"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Side"
+            android:id="@+id/side"
+            android:background="@color/buttonColor"/>
     </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/orientation"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="40dp"
         android:text="New Game"
-        android:id="@+id/NewGame"/>
+        android:id="@+id/NewGame"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="40dp"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/NewGame"
-        android:layout_marginTop="30dp"/>
+        android:layout_below="@id/orientation"
+        android:layout_marginTop="40dp"
+        android:id="@+id/message"
+        android:textSize="30dp"/>
 
 
 </RelativeLayout>
