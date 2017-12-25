@@ -20,7 +20,6 @@ import android.view.WindowManager;
 /**
  * Created by Logan on 12/17/17.
  * TODO:
- * -change orientation butons to indicate current orientation
  * -highlight winning cells
  * -improve computer playing algoritm
  * -create settings screen
@@ -37,6 +36,7 @@ public class BoardView extends View {
     private Paint mLinePaint; //paint objects to draw board
     private Paint mXPaint;
     private Paint mOPaint;
+    private Paint mHighlightPaint;
 
     //setup status listener to update text
     public interface GameStatusListener {
@@ -98,6 +98,9 @@ public class BoardView extends View {
         mOPaint.setColor(Color.parseColor("#0000ff"));
         mOPaint.setStrokeWidth(4);
 
+        mHighlightPaint=new Paint(Paint.ANTI_ALIAS_FLAG);
+        mHighlightPaint.setColor(Color.parseColor("#10ff10"));
+
         setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -121,8 +124,26 @@ public class BoardView extends View {
     }
 
     private void playerTurn(int l,int c,int r){
-        b.setCell(l,c,r, player);
-        BoardStructure.value win = b.winner(l,c,r);
+        int x,y,z;
+        if(orientation==ot.TOP) {
+            z=l;
+            x=c;
+            y=r;
+        }
+        else if(orientation==ot.SIDE) {
+            z=r;
+            x=2-l;
+            y=2-c;
+        }
+        else {
+            z=r;
+            x=c;
+            y=2-l;
+        }
+        b.setCell(z,x,y,player);
+        BoardStructure.value win = b.winner(z,x,y);
+        Log.d("cell:", ""+b.eval(z,x,y));
+        Log.d("pturn winner:", ""+win);
         if(win!=BoardStructure.value.EMPTY){
             if(win==player){
                 mStatus.updateText("You Win!");
@@ -156,15 +177,25 @@ public class BoardView extends View {
         }
 
         BoardStructure.value cell;
+        boolean win;
 
         for(int l=0; l<b.BoardSize; l++){
             int inc=boardSize*l;
             for (int r = 0; r < b.BoardSize; r++) {
                 for (int c = 0; c < b.BoardSize; c++) {
                     //pick which values to draw where according to orientation of board
-                    if(orientation==ot.TOP) cell = b.eval(l, c, r);
-                    else if(orientation==ot.SIDE) cell=b.eval(r,2-l,2-c);
-                    else cell=b.eval(r,c,2-l);
+                    if(orientation==ot.TOP) {
+                        cell = b.eval(l, c, r);
+                        win = b.partOfWin(l,c,r);
+                    }
+                    else if(orientation==ot.SIDE) {
+                        cell=b.eval(r,2-l,2-c);
+                        win=b.partOfWin(r,2-l,2-c);
+                    }
+                    else {
+                        cell=b.eval(r,c,2-l);
+                        win=b.partOfWin(r,c,2-l);
+                    }
 
                     //paint cell values
                     if (cell == BoardStructure.value.X) {
@@ -175,6 +206,15 @@ public class BoardView extends View {
                         mOPaint.setStyle(Paint.Style.STROKE);
                         mOPaint.setStrokeWidth(cellSize/8.0f);
                         canvas.drawCircle(c*cellSize + cellSize/2+inc, r*cellSize+cellSize/2, 0.30f*cellSize, mOPaint);
+                    }
+                    //highlight winning cells
+                    if(win){
+                        mHighlightPaint.setStrokeWidth(cellSize/10.0f);
+                        canvas.drawLine(c*cellSize+cellSize/10+inc, r*cellSize+cellSize/10, c*cellSize+cellSize/10+inc, r*cellSize+9*cellSize/10, mHighlightPaint);
+                        canvas.drawLine(c*cellSize+cellSize/10+inc, r*cellSize+cellSize/10, c*cellSize+9*cellSize/10+inc, r*cellSize+cellSize/10, mHighlightPaint);
+                        canvas.drawLine(c*cellSize+9*cellSize/10+inc, r*cellSize+9*cellSize/10, c*cellSize+cellSize/10+inc, r*cellSize+9*cellSize/10, mHighlightPaint);
+                        canvas.drawLine(c*cellSize+9*cellSize/10+inc, r*cellSize+9*cellSize/10, c*cellSize+9*cellSize/10+inc, r*cellSize+cellSize/10, mHighlightPaint);
+
                     }
                 }
             }
@@ -215,6 +255,7 @@ public class BoardView extends View {
 
     public void reset(){
         b.reset();
+        mStatus.updateText("");
         postInvalidate();
         comp=false;
     }

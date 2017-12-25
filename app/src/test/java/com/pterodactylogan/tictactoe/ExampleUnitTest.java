@@ -41,5 +41,13 @@ public class ExampleUnitTest {
         b3.setCell(0,1,1, BoardStructure.value.O);
         b3.setCell(0,2,2, BoardStructure.value.O);
         assertEquals(BoardStructure.value.X, b3.winner(0,2,2));
+
+        BoardStructure b4= new BoardStructure(3);
+        b4.setCell(1,1,1, BoardStructure.value.X);
+        b4.setCell(0,0,0, BoardStructure.value.O);
+        b4.setCell(1,0,1, BoardStructure.value.X);
+        b4.setCell(0,0,1, BoardStructure.value.O);
+        b4.setCell(1,2,1, BoardStructure.value.X);
+        assertEquals(BoardStructure.value.X, b4.winner(1,2,1));
     }
 }
