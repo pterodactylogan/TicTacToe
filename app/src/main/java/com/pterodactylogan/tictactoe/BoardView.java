@@ -228,7 +228,7 @@ public class BoardView extends View {
         public void run() {
             comp=true;
             //Log.d("comp turn","...");
-            int[] move = b.getMove(computer);
+            int[] move = b.getGoodMove(computer);
             if(move==null){
                 //game over
                 return;

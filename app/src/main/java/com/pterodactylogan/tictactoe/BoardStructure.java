@@ -4,6 +4,7 @@ import android.util.Log;
 import android.webkit.ConsoleMessage;
 
 import java.io.Console;
+import java.util.Random;
 
 /**
  * Created by Logan on 12/17/17.
@@ -15,6 +16,7 @@ public class BoardStructure {
     public enum value {X, O, EMPTY}
     private value [][][] board = new value[3][BoardSize][BoardSize];
     private boolean[][][] winCombo = new boolean[3][BoardSize][BoardSize];
+    Random rand = new Random();
 
     //initialize board to be empty, with no winning combo
     public BoardStructure(int size){
@@ -171,6 +173,15 @@ public class BoardStructure {
     //finds first available move atm
     public int[] getMove(value player){
         int[] result= new int[3];
+        int a = rand.nextInt(3);
+        int b = rand.nextInt(3);
+        int c = rand.nextInt(3);
+        if(isLegal(a,b,c)){
+            result[0]=a;
+            result[1]=b;
+            result[2]=c;
+            return result;
+        }
         for(int z=0; z<3;z++){
             for(int x=0; x<3; x++){
                 for(int y=0; y<3; y++){
@@ -186,6 +197,84 @@ public class BoardStructure {
         return null;
     }
 
+    public int[] getGoodMove(value player){
+        int[] result = new int[3];
+        int[] move = new int[3];
+        int maxVal=-10;
+        for(int z=0; z<3;z++){
+            for(int x=0; x<3; x++){
+                for(int y=0; y<3; y++){
+                    if(isLegal(z,x,y)){
+                        move[0]=z;
+                        move[1]=x;
+                        move[2]=y;
+                        int val = boardValue(move, 3,-100,100, player);
+                        if(player==value.O) val*=-1;
+                        //save the max value and return that move;
+                        if(val>maxVal){
+                            result=move.clone();
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    //+5 for X (max) win, -5  for O (min) win, 0 for unsure
+    private int boardValue(int[]move, int depth, int a, int b, value player){
+        value[][][] copy = boardCopy();
+        //if someone has won
+        value winner = winner(move[0],move[1], move[2]);
+        if(winner==value.O) return -5;
+        if(winner==value.X) return 5;
+        if(depth==0) return 0; //reached depth limit
+
+        if(player==value.X){
+            int v = -10;
+            for(int z=0; z<3;z++){
+                for(int x=0; x<3; x++){
+                    for(int y=0; y<3; y++){
+                        if(isLegal(z,x,y)){
+                            move[0]=z;
+                            move[1]=x;
+                            move[2]=y;
+                            setCell(z,x,y,player);
+                            Log.d(z+", "+x+", "+y, ""+copy[z][x][y]);
+                            v=Math.max(v, boardValue(move, depth-1, a,b, value.O));
+                            a=Math.max(a,v);
+                            if(b<=a) break;
+                        }
+                    }
+                }
+            }
+            board=copy;
+            if(v==-10) return 0;
+            return v;
+        }else{
+            int v=10;
+            for(int z=0; z<3;z++){
+                for(int x=0; x<3; x++){
+                    for(int y=0; y<3; y++){
+                        if(isLegal(z,x,y)){
+                            move[0]=z;
+                            move[1]=x;
+                            move[2]=y;
+                            setCell(z,x,y,player);
+                            Log.d(z+", "+x+", "+y, ""+copy[z][x][y]);
+                            v=Math.min(v, boardValue(move, depth-1, a,b, value.X));
+                            b=Math.min(b,v);
+                            if(b<=a) break;
+                        }
+                    }
+                }
+            }
+            board=copy;
+            if(v==10) return 0;
+            return v;
+        }
+    }
+
     public void reset(){
         for(int z=0; z<3; z++){
             for (int x = 0 ; x < BoardSize ; x++){
@@ -195,5 +284,17 @@ public class BoardStructure {
                 }
             }
         }
+    }
+
+    public value[][][] boardCopy(){
+        value[][][] copy = new value[3][BoardSize][BoardSize];
+        for(int i=0; i<3; i++){
+            for(int j=0; j<BoardSize; j++){
+                for(int k=0; k<BoardSize; k++){
+                    copy[i][j][k] = board[i][j][k];
+                }
+            }
+        }
+        return copy;
     }
 }
