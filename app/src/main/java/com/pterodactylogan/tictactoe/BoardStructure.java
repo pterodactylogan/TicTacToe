@@ -5,6 +5,7 @@ import android.webkit.ConsoleMessage;
 
 import java.io.Console;
 import java.util.Random;
+import java.util.Arrays;
 
 /**
  * Created by Logan on 12/17/17.
@@ -205,14 +206,20 @@ public class BoardStructure {
             for(int x=0; x<3; x++){
                 for(int y=0; y<3; y++){
                     if(isLegal(z,x,y)){
+                        Log.d("z,x,y", z+", "+x+", "+y);
                         move[0]=z;
                         move[1]=x;
                         move[2]=y;
                         int val = boardValue(move, 3,-100,100, player);
                         if(player==value.O) val*=-1;
+                        Log.d("value", ""+val);
                         //save the max value and return that move;
                         if(val>maxVal){
-                            result=move.clone();
+                            result[0]=z;
+                            result[1]=x;
+                            result[2]=y;
+                            maxVal=val;
+                            Log.d("result", Arrays.toString(result));
                         }
                     }
                 }
@@ -224,10 +231,19 @@ public class BoardStructure {
     //+5 for X (max) win, -5  for O (min) win, 0 for unsure
     private int boardValue(int[]move, int depth, int a, int b, value player){
         value[][][] copy = boardCopy();
+        boolean[][][] winCopy=copy(winCombo);
+
+        setCell(move[0],move[1], move[2], player);
         //if someone has won
         value winner = winner(move[0],move[1], move[2]);
-        if(winner==value.O) return -5;
-        if(winner==value.X) return 5;
+        if(winner==value.O) {
+            Log.d("O wins", ""+depth);
+            return -5;
+        }
+        if(winner==value.X) {
+            Log.d("X wins", ""+depth);
+            return 5;
+        }
         if(depth==0) return 0; //reached depth limit
 
         if(player==value.X){
@@ -239,8 +255,8 @@ public class BoardStructure {
                             move[0]=z;
                             move[1]=x;
                             move[2]=y;
-                            setCell(z,x,y,player);
-                            Log.d(z+", "+x+", "+y, ""+copy[z][x][y]);
+                            //setCell(z,x,y,player);
+                            //Log.d(z+", "+x+", "+y, ""+copy[z][x][y]);
                             v=Math.max(v, boardValue(move, depth-1, a,b, value.O));
                             a=Math.max(a,v);
                             if(b<=a) break;
@@ -248,6 +264,7 @@ public class BoardStructure {
                     }
                 }
             }
+            winCombo=winCopy;
             board=copy;
             if(v==-10) return 0;
             return v;
@@ -260,8 +277,8 @@ public class BoardStructure {
                             move[0]=z;
                             move[1]=x;
                             move[2]=y;
-                            setCell(z,x,y,player);
-                            Log.d(z+", "+x+", "+y, ""+copy[z][x][y]);
+                            //setCell(z,x,y,player);
+                            //Log.d(z+", "+x+", "+y, ""+copy[z][x][y]);
                             v=Math.min(v, boardValue(move, depth-1, a,b, value.X));
                             b=Math.min(b,v);
                             if(b<=a) break;
@@ -269,6 +286,7 @@ public class BoardStructure {
                     }
                 }
             }
+            winCombo=winCopy;
             board=copy;
             if(v==10) return 0;
             return v;
@@ -296,5 +314,19 @@ public class BoardStructure {
             }
         }
         return copy;
+    }
+
+    public boolean[][][] copy(boolean[][][]input){
+            boolean[][][] result = new boolean[input.length][input[0].length][input[0][0].length];
+            //Log.d("input[][].len", ""+input[0][0].length);
+            for(int i=0; i<input.length; i++){
+                for(int j=0; j<input[0].length; j++){
+                    for(int k=0; k<input[0][0].length; k++){
+                        //Log.d("i,j,k", i+", "+j+", "+k);
+                        result[i][j][k]= input[i][j][k];
+                    }
+                }
+            }
+            return result;
     }
 }
